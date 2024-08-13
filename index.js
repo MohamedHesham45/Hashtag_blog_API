@@ -49,9 +49,7 @@ mongoose.connect(process.env.DB_URL)
         });
         await admin.save();
       }
-      app.listen(process.env.PORT||3000, () => {
-        console.log('Server is running on port 3000');
-      });
+    
     } catch (error) {
   logger.error(` ${new Date().toISOString()} - Error: ${error.message}`);
 
@@ -65,3 +63,4 @@ mongoose.connect(process.env.DB_URL)
     console.error('Database connection error:', error);
     process.exit(1);
   });
+  module.exports=app
