@@ -1,28 +1,25 @@
 const express = require("express");
 const mongoose = require("mongoose");
-var morgan = require('morgan')
+const morgan = require('morgan');
 require("express-async-errors");
 const usersRoute = require("./routes/user");
-const postRoute=require('./routes/posts')
+const postRoute = require('./routes/posts');
 const CustomError = require('./utils/customError');
 const User = require("./models/users");
 const loggerMiddleware = require('./middlewares/loggerMid');
 const logger = require('./utils/loggerFun');
-
-
-
-
-
 require("dotenv").config();
 
 const app = express();
+
+app.get("/", (req, res) => res.send("Express on Vercel"));
+
 app.use(express.json());
 app.use(loggerMiddleware);
-app.use(morgan('dev'))
+app.use(morgan('dev'));
 
 app.use(usersRoute);
-app.use('/posts',postRoute);
-
+app.use('/posts', postRoute);
 
 app.use((err, req, res, next) => {
   logger.error(`${req.method} ${req.url} - ${new Date().toISOString()} - Error: ${err.message}`);
@@ -34,33 +31,31 @@ app.use((err, req, res, next) => {
   }
 });
 
+// Connect to MongoDB
 mongoose.connect(process.env.DB_URL)
   .then(async () => {
-
     try {
       const { ADMIN, ADMIN_PASS } = process.env;
       const existingAdmin = await User.findOne({ email: ADMIN });
       if (!existingAdmin) {
         const admin = new User({
           email: ADMIN,
-          password:ADMIN_PASS,
+          password: ADMIN_PASS,
           role: 'admin',
         });
         await admin.save();
       }
-      app.listen(process.env.PORT||3000, () => {
-        console.log('Server is running on port 3000');
-      });
     } catch (error) {
-  logger.error(`${req.method} ${req.url} - ${new Date().toISOString()} - Error: ${err.message}`);
-
+      logger.error(` ${new Date().toISOString()} - Error: ${error.message}`);
       console.error('Error during database initialization:', error);
       process.exit(1);
     }
   })
   .catch(error => {
-  logger.error(`${req.method} ${req.url} - ${new Date().toISOString()} - Error: ${err.message}`);
-
+    logger.error(` ${new Date().toISOString()} - Error: ${error.message}`);
     console.error('Database connection error:', error);
     process.exit(1);
   });
+
+// Export the app to be used by Vercel
+module.exports = app;
