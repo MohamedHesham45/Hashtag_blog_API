@@ -8,6 +8,7 @@ const CustomError = require('./utils/customError');
 const User = require("./models/users");
 const loggerMiddleware = require('./middlewares/loggerMid');
 const logger = require('./utils/loggerFun');
+var cors = require('cors')
 
 
 
@@ -16,6 +17,7 @@ const logger = require('./utils/loggerFun');
 require("dotenv").config();
 
 const app = express();
+app.use(cors())
 app.use(express.json());
 app.use(loggerMiddleware);
 app.use(morgan('dev'))

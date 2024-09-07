@@ -22,8 +22,8 @@ router.get("/",auth,getPosts)
 router.get("/user",auth,getHesPosts)
 router.get("/:id",auth,getPostById)
 
-router.patch("/:id",auth,upload.single("image"),validation(updatePostValid),singleImageUpload,updatePost,deleteImage)
-router.delete("/:id",auth,deletePost,deleteImage)
+router.patch("/:id",auth,upload.single("image"),validation(updatePostValid),singleImageUpload,updatePost)
+router.delete("/:id",auth,deletePost)
 
 
 
