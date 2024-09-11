@@ -6,7 +6,7 @@ const jwtSign = util.promisify(jwt.sign);
 const CustomError = require('../utils/customError');
 
 exports.signup = async (req, res, next) => {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body; 
 
     try {
         const existingUser = await User.findOne({ email });
@@ -15,7 +15,7 @@ exports.signup = async (req, res, next) => {
         }
 
 
-        const user = new User({ name, email, password });
+        const user = new User({ name, email, password ,image:req.user});
         await user.save();
 
         res.status(201).send({ message: "User created", user });
@@ -35,32 +35,29 @@ exports.login = async (req, res, next) => {
       const isMatched = await bcrypt.compare(password, user.password);
       if (isMatched) {
           const token = await jwtSign({ userId: user._id }, process.env.JWT_SECRET_ACCESS_TOKEN, {
-              expiresIn: '15m',
+              expiresIn: '30d',
           });
-          const refreshToken = await jwtSign({ userId: user._id }, process.env.JWT_SECRET_REFRESH_TOKEN, {
-            expiresIn: '30d',
-        });
-          res.status(200).send({ message: 'User logged in', token ,refreshToken});
+        
+          res.status(200).send({ message: 'User logged in', token ,user});
       } else {
           return next(new CustomError('Invalid email or password', 401));
       }
   } catch (error) {
-    console.log(error);
       next(new CustomError('Internal server error', 500));
   }
 };
 
-exports.refreshToken=async (req, res) => {
-    const { token } = req.body;
-    if (!token) return next(new CustomError('No token provided ', 401));
+// exports.refreshToken=async (req, res) => {
+//     const { token } = req.body;
+//     if (!token) return next(new CustomError('No token provided ', 401));
     
-    jwt.verify(token, process.env.JWT_SECRET_REFRESH_TOKEN, (err, user) => {
-        if (err) return next(new CustomError('Invalid or expired refresh token ', 403));
+//     jwt.verify(token, process.env.JWT_SECRET_REFRESH_TOKEN, (err, user) => {
+//         if (err) return next(new CustomError('Invalid or expired refresh token ', 403));
         
-        const newAccessToken = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET_ACCESS_TOKEN, { expiresIn: '15m' });
-        res.status(200).send({
-            massage:"New access token has been issued successfully.",
-             accessToken: newAccessToken 
-            });
-    })
-}
+//         const newAccessToken = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET_ACCESS_TOKEN, { expiresIn: '15m' });
+//         res.status(200).send({
+//             massage:"New access token has been issued successfully.",
+//              accessToken: newAccessToken 
+//             });
+//     })
+// }

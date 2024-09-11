@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 var morgan = require('morgan')
@@ -14,7 +15,6 @@ var cors = require('cors')
 
 
 
-require("dotenv").config();
 
 const app = express();
 app.use(cors())
@@ -31,7 +31,6 @@ app.use((err, req, res, next) => {
   if (err instanceof CustomError) {
     res.status(err.statusCode).json({ message: err.message });
   } else {
-    console.log(err);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
@@ -51,7 +50,9 @@ mongoose.connect(process.env.DB_URL)
         });
         await admin.save();
       }
-    
+    app.listen(3000,()=>{
+      console.log(`Server running at http://localhost:${3000}`);
+    });
     } catch (error) {
   logger.error(` ${new Date().toISOString()} - Error: ${error.message}`);
 

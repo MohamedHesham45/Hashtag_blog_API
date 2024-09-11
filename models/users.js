@@ -11,7 +11,11 @@ const userSchema = new Schema({
     },
     password:{
         type:String
-    },  
+    },
+    image:{
+      type: String, 
+      default: "https://cdn-icons-png.flaticon.com/512/147/147144.png",
+    }, 
     role: {
         type: String,
         default: "user",

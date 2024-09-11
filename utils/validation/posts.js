@@ -24,33 +24,24 @@ const creatPostValid = Joi.object({
       'string.max': 'Description should have a maximum length of 500 characters',
       'any.required': 'Description is a required field',
     }),
-
-  tags: Joi.array()
-    .items(Joi.string().messages({
-      'string.base': 'Each tag should be a type of text',
-    }))
-    .max(10)
-    .messages({
-      'array.base': 'Tags should be an array of strings',
-      'array.max': 'Tags cannot contain more than 10 items',
-    }),
     image: Joi.object({
-      buffer: Joi.binary().required().messages({
+      buffer: Joi.binary().messages({
         'binary.base': 'Image file data must be provided',
-        'any.required': 'Image file is required'
+    
       }),
-      mimetype: Joi.string().regex(/^image\//).required().messages({
+      mimetype: Joi.string().regex(/^image\//).messages({
         'string.base': 'Image type must be a string',
         'string.pattern.base': 'Invalid image type',
-        'any.required': 'Image type is required'
+  
       }),
-      
-    }).required()
+     
+    })
     .messages({
       'object.base': 'Image must be an object',
-      'any.required': 'Image is a required field'
+  
     })
-    
+  
+        
 });
 
 const updatePostValid =Joi.object({
@@ -74,31 +65,26 @@ description: Joi.string()
     'string.max': 'Description should have a maximum length of 500 characters',
   }),
 
-tags: Joi.array()
-  .items(Joi.string().messages({
-    'string.base': 'Each tag should be a type of text',
-  }))
-  .max(10)
-  .messages({
-    'array.base': 'Tags should be an array of strings',
-    'array.max': 'Tags cannot contain more than 10 items',
-  }),
-  image: Joi.object({
-    buffer: Joi.binary().messages({
-      'binary.base': 'Image file data must be provided',
+
+  image: Joi.alternatives().try(
+    Joi.object({
+      buffer: Joi.binary().messages({
+        'binary.base': 'Image file data must be provided as binary',
+      }),
+      mimetype: Joi.string().regex(/^image\//).messages({
+        'string.base': 'Image type must be a string',
+        'string.pattern.base': 'Invalid image type',
+      }),
+    }).messages({
+      'object.base': 'Image must be an object containing buffer and mimetype',
+    }),
+    Joi.string().messages({
+      'string.base': 'Image must be a string',
+    })
+  ).messages({
+    'alternatives.base': 'Image must be either an object or a string (like a URL)',
+  })
   
-    }),
-    mimetype: Joi.string().regex(/^image\//).messages({
-      'string.base': 'Image type must be a string',
-      'string.pattern.base': 'Invalid image type',
-
-    }),
-   
-  })
-  .messages({
-    'object.base': 'Image must be an object',
-
-  })
 })
 
 module.exports= {creatPostValid,updatePostValid};

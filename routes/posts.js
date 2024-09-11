@@ -4,7 +4,7 @@ const validation = require("../middlewares/validateRequest");
 const auth = require("../middlewares/auth");
 const multer = require("multer");
 const {creatPostValid ,updatePostValid} = require("../utils/validation/posts");
-const { getPosts, getPostById, createPosts,getHesPosts,updatePost,deletePost } = require("../controllers/posts");
+const { getPosts, getPostById, createPosts,getHesPosts,updatePost,deletePost, createComment, toggleLike } = require("../controllers/posts");
 const singleImageUpload = require("../middlewares/uploadSingleImage");
 const upload = multer();
 const deleteImage=require("../middlewares/deleteImage")
@@ -21,7 +21,8 @@ router.post(
 router.get("/",auth,getPosts)
 router.get("/user",auth,getHesPosts)
 router.get("/:id",auth,getPostById)
-
+router.post("/comment/:postId",auth,createComment)
+router.post("/like/:postId",auth,toggleLike)
 router.patch("/:id",auth,upload.single("image"),validation(updatePostValid),singleImageUpload,updatePost)
 router.delete("/:id",auth,deletePost)
 
